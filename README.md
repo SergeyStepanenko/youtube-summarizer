@@ -19,7 +19,7 @@
 ### 1. Клонирование репозитория
 
 ```bash
-git clone https://github.com/yourusername/youtube-summarizer.git
+git clone https://github.com/SergeyStepanenko/youtube-summarizer.git
 cd youtube-summarizer
 ```
 
@@ -218,7 +218,7 @@ requests>=2.28.0
 
 **Sergey Stepanenko**
 
-- GitHub: [@yourusername](https://github.com/yourusername)
+- GitHub: [@SergeyStepanenko](https://github.com/SergeyStepanenko)
 
 ## 🙏 Благодарности
 
