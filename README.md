@@ -3,155 +3,155 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Скрипт для получения текста (транскрипта/субтитров) из видео на YouTube с возможностью автоматического резюмирования. Приоритет отдается русскому языку, если его нет - берется любой доступный.
+A script for extracting text (transcripts/subtitles) from YouTube videos with optional automatic summarization. Russian language is prioritized; if unavailable, any available language is used.
 
-## ✨ Особенности
+## Features
 
-- 📝 Извлечение транскриптов из YouTube видео
-- 🎯 Автоматическое резюмирование с настраиваемым коэффициентом сжатия
-- 🇷🇺 Приоритет русскому языку (с fallback на другие языки)
-- 📊 Статистика времени: продолжительность видео, время чтения, экономия времени
-- 💾 Сохранение в файл или вывод в консоль
-- 🔍 Поддержка различных форматов YouTube URL
+- Extract transcripts from YouTube videos
+- Automatic summarization with configurable compression ratio
+- Russian language priority (with fallback to other languages)
+- Time statistics: video duration, reading time, time saved
+- Save to file or print to console
+- Support for various YouTube URL formats
 
-## 🚀 Быстрый старт
+## Quick Start
 
-### 1. Клонирование репозитория
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/SergeyStepanenko/youtube-summarizer.git
 cd youtube-summarizer
 ```
 
-### 2. Создание виртуального окружения (обязательно)
+### 2. Create a virtual environment (required)
 
-> **Важно:** На macOS и многих дистрибутивах Linux установка пакетов через `pip` без виртуального окружения заблокирована системой (PEP 668 — `externally-managed-environment`). Создание venv **обязательно**.
+> **Important:** On macOS and many Linux distributions, installing packages via `pip` without a virtual environment is blocked by the system (PEP 668 — `externally-managed-environment`). Creating a venv is **required**.
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate  # Для Linux/Mac
-# или
-.venv\Scripts\activate  # Для Windows
+source .venv/bin/activate  # Linux/Mac
+# or
+.venv\Scripts\activate  # Windows
 ```
 
-### 3. Установка зависимостей
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-> **Убедитесь**, что виртуальное окружение активировано (в начале строки терминала должно быть `(.venv)`) перед установкой зависимостей и запуском скрипта.
+> **Make sure** the virtual environment is activated (the terminal prompt should show `(.venv)`) before installing dependencies and running the script.
 
-### 4. Использование
+### 4. Usage
 
 ```bash
-source .venv/bin/activate  # если окружение ещё не активировано
+source .venv/bin/activate  # if the environment is not yet activated
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
-Транскрипт будет сохранен в файл `transcript.txt`.
+The transcript will be saved to `transcript.txt`.
 
-## Использование
+## Usage
 
-### Базовое использование
+### Basic usage
 
-Получить транскрипт и сохранить в `transcript.txt` (по умолчанию):
+Get a transcript and save it to `transcript.txt` (default):
 
 ```bash
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
-### Сохранение в другой файл
+### Save to a different file
 
 ```bash
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -o output.txt
 ```
 
-### Вывод в консоль
+### Print to console
 
 ```bash
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" --stdout
 ```
 
-### Создание резюме транскрипта (Sumery video)
+### Create a transcript summary
 
-Новая функция! Вместо полного транскрипта можно получить краткое резюме:
+New feature! Instead of the full transcript you can get a brief summary:
 
 ```bash
-# Создать резюме (30% от оригинала по умолчанию)
+# Create a summary (30% of the original by default)
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -s
 
-# Создать резюме с другим коэффициентом сжатия (например, 20%)
+# Create a summary with a different compression ratio (e.g. 20%)
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -s -r 0.2
 
-# Сохранить резюме в свой файл
+# Save the summary to a custom file
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -s -o my_summary.txt
 
-# Получить резюме на русском языке (если есть русские субтитры)
+# Get a summary in Russian (if Russian subtitles are available)
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -s --stdout
 ```
 
-**Важно:** Резюме создается на том же языке, что и оригинальный транскрипт. Для получения резюме на русском языке:
-1. Если видео имеет русские субтитры - резюме будет на русском
-2. Если русских субтитров нет - сначала получите транскрипт, затем используйте AI-сервисы для перевода и создания резюме на русском
+**Note:** The summary is generated in the same language as the original transcript. To get a summary in Russian:
+1. If the video has Russian subtitles — the summary will be in Russian
+2. If there are no Russian subtitles — first get the transcript, then use AI services to translate and summarize in Russian
 
-### Примеры
+### Examples
 
 ```bash
-# Сохранить полный транскрипт в transcript.txt (по умолчанию)
+# Save full transcript to transcript.txt (default)
 python youtube_transcript.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
-# Создать резюме и сохранить в summary.txt (по умолчанию при -s)
+# Create a summary and save to summary.txt (default with -s)
 python youtube_transcript.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ" -s
 
-# Сохранить в другой файл
+# Save to a different file
 python youtube_transcript.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ" -o my_transcript.txt
 
-# Вывести резюме в консоль
+# Print summary to console
 python youtube_transcript.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ" -s --stdout
 
-# Создать очень краткое резюме (10% от оригинала)
+# Create a very brief summary (10% of the original)
 python youtube_transcript.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ" -s -r 0.1
 
-# Пример получения Sumery video на русском языке:
-# 1. Для видео с русскими субтитрами:
+# Example: getting a Russian-language summary:
+# 1. For a video with Russian subtitles:
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_WITH_RU_SUBS" -s -o summary_ru.txt
 
-# 2. Для видео без русских субтитров (двухэтапный процесс):
-#    Шаг 1: Получить транскрипт
+# 2. For a video without Russian subtitles (two-step process):
+#    Step 1: Get the transcript
 python youtube_transcript.py "https://www.youtube.com/watch?v=ENGLISH_VIDEO" -o transcript_en.txt
-#    Шаг 2: Использовать AI для перевода и создания резюме на русском
-#    (см. раздел "Язык вывода" для подробностей)
+#    Step 2: Use AI to translate and create a summary in Russian
+#    (see the "Output language" section for details)
 ```
 
-## Поддерживаемые форматы URL
+## Supported URL formats
 
 - `https://www.youtube.com/watch?v=VIDEO_ID`
 - `https://youtube.com/watch?v=VIDEO_ID`
 - `https://youtu.be/VIDEO_ID`
 - `https://www.youtube.com/embed/VIDEO_ID`
 
-## Функции
+## Features
 
-### Автоматическое резюмирование
+### Automatic summarization
 
-Скрипт может автоматически создавать резюме транскрипта:
+The script can automatically create a transcript summary:
 
-- Использует экстрактивный метод (выбирает наиболее важные предложения)
-- Настраиваемый коэффициент сжатия (по умолчанию 30%)
-- Сохраняет ключевые мысли и важную информацию
-- **Статистика показывает время чтения резюме, а не полного транскрипта!**
+- Uses an extractive method (selects the most important sentences)
+- Configurable compression ratio (30% by default)
+- Preserves key ideas and important information
+- **Statistics show the reading time of the summary, not the full transcript!**
 
-### Статистика времени
+### Time statistics
 
-При получении транскрипта или резюме скрипт автоматически показывает:
+When retrieving a transcript or summary the script automatically shows:
 
-- **Продолжительность видео** - длительность оригинального видео
-- **Размер текста** - количество слов (для резюме показывает также размер оригинала и процент сжатия)
-- **Время чтения** - примерное время, необходимое для прочтения (из расчета ~200 слов в минуту)
-- **Экономия времени** - сколько времени вы экономите, читая текст вместо просмотра видео
+- **Video duration** — length of the original video
+- **Text size** — word count (for summaries also shows original size and compression percentage)
+- **Reading time** — estimated time needed to read the text (~200 words per minute)
+- **Time saved** — how much time you save by reading the text instead of watching the video
 
-### Пример вывода статистики для полного транскрипта
+### Statistics output example — full transcript
 
 ```
 📊 Статистика:
@@ -160,7 +160,7 @@ python youtube_transcript.py "https://www.youtube.com/watch?v=ENGLISH_VIDEO" -o 
    ⏱️  Экономия времени: 5:02 (59%)
 ```
 
-### Пример вывода статистики для резюме
+### Statistics output example — summary
 
 ```
 📊 Статистика:
@@ -171,142 +171,142 @@ python youtube_transcript.py "https://www.youtube.com/watch?v=ENGLISH_VIDEO" -o 
    ⏱️  Экономия времени: 44:04 (72%)
 ```
 
-## Логика работы
+## How it works
 
-1. Сначала скрипт пытается получить транскрипт на русском языке (ручной или автоматически сгенерированный)
-2. Если русского нет - берет первый доступный язык из списка субтитров
-3. При использовании флага `-s` применяется резюмирование:
-   - Текст разбивается на предложения
-   - Вычисляется важность каждого предложения на основе частоты значимых слов
-   - Выбираются наиболее важные предложения (по умолчанию 30%)
-4. Автоматически получает продолжительность видео и рассчитывает статистику времени
-5. **При резюмировании статистика показывает время чтения резюме, а не полного транскрипта**
+1. The script first tries to get a transcript in Russian (manual or auto-generated)
+2. If Russian is not available — it takes the first available language from the subtitle list
+3. When the `-s` flag is used, summarization is applied:
+   - Text is split into sentences
+   - The importance of each sentence is computed based on word frequency
+   - The most important sentences are selected (30% by default)
+4. Video duration is fetched automatically and time statistics are calculated
+5. **During summarization, statistics show the reading time of the summary, not the full transcript**
 
-### Получение Sumery video на русском языке
+### Getting a Russian-language video summary
 
-Для создания резюме видео на русском языке (Sumery video):
+To create a video summary in Russian:
 
-1. **Автоматически** (если видео имеет русские субтитры):
-   - Скрипт находит русский транскрипт
-   - Применяет алгоритм резюмирования
-   - Выводит результат на русском языке
+1. **Automatically** (if the video has Russian subtitles):
+   - The script finds the Russian transcript
+   - Applies the summarization algorithm
+   - Outputs the result in Russian
 
-2. **Вручную** (если русских субтитров нет):
-   - Получить транскрипт на доступном языке
-   - Использовать внешний сервис для перевода на русский
-   - Применить алгоритм резюмирования или использовать AI для создания резюме
+2. **Manually** (if there are no Russian subtitles):
+   - Get the transcript in the available language
+   - Use an external service to translate it to Russian
+   - Apply the summarization algorithm or use AI to create a summary
 
-3. **Статистика для Sumery video**:
-   - Показывает размер оригинального текста и резюме
-   - Рассчитывает процент сжатия
-   - Сравнивает время просмотра видео и время чтения резюме
-   - Показывает экономию времени
+3. **Statistics for the summary**:
+   - Shows the size of the original text and the summary
+   - Calculates the compression percentage
+   - Compares video watch time and summary reading time
+   - Shows time saved
 
-## Язык вывода
+## Output language
 
-Резюме и транскрипт выводятся **на русском языке**. Скрипт автоматически ищет русские субтитры (ручные или автосгенерированные). Если русских субтитров нет — берётся первый доступный язык.
+Summaries and transcripts are output **in Russian**. The script automatically looks for Russian subtitles (manual or auto-generated). If no Russian subtitles are available, the first available language is used.
 
-### Sumery video на русском языке
+### Russian-language video summary
 
-Для получения резюме видео на русском языке:
+To get a video summary in Russian:
 
-1. **Если видео имеет русские субтитры** - скрипт автоматически использует их и создает резюме на русском
-2. **Если видео не имеет русских субтитров** - используйте один из следующих методов:
+1. **If the video has Russian subtitles** — the script uses them automatically and creates a summary in Russian
+2. **If the video does not have Russian subtitles** — use one of the following methods:
 
-#### Метод 1: Использование AI-сервисов (рекомендуется)
+#### Method 1: Use AI services (recommended)
 ```bash
-# 1. Получите транскрипт на английском (или другом языке)
+# 1. Get the transcript in English (or another language)
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -o transcript_en.txt
 
-# 2. Используйте ChatGPT, Claude или другой AI для перевода и создания резюме
-#    Промпт: "Переведи этот транскрипт на русский и сделай краткое резюме основных моментов видео"
+# 2. Use ChatGPT, Claude, or another AI to translate and summarize
+#    Prompt: "Translate this transcript to Russian and write a brief summary of the main points"
 ```
 
-#### Метод 2: Использование Google Translate + AI
+#### Method 2: Use Google Translate + AI
 ```bash
-# 1. Получите транскрипт
+# 1. Get the transcript
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -o transcript.txt
 
-# 2. Переведите через Google Translate или DeepL
-# 3. Используйте AI для создания резюме на русском
+# 2. Translate via Google Translate or DeepL
+# 3. Use AI to create a summary in Russian
 ```
 
-#### Метод 3: Автоматический пайплайн (скрипт можно расширить)
-Для автоматизации можно добавить интеграцию с:
+#### Method 3: Automated pipeline (the script can be extended)
+For automation you can add integration with:
 - Google Translate API
 - DeepL API  
-- OpenAI API для перевода и резюмирования
+- OpenAI API for translation and summarization
 
-### Пример использования с AI-переводом
+### Example with AI translation
 ```bash
-# Получить транскрипт
+# Get the transcript
 python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -o transcript.txt
 
-# Использовать Claude для перевода и резюмирования (пример промпта):
+# Use Claude to translate and summarize (example prompt):
 """
-Переведи следующий транскрипт YouTube видео на русский язык и создай краткое резюме основных моментов:
+Translate the following YouTube video transcript to Russian and create a brief summary of the main points:
 
-[вставить содержимое transcript.txt]
+[paste transcript.txt contents here]
 
-Резюме должно быть:
-1. На русском языке
-2. Кратким (10-15% от оригинала)
-3. Содержать ключевые идеи и выводы
-4. Быть структурированным по пунктам
+The summary should be:
+1. In Russian
+2. Brief (10-15% of the original)
+3. Contain key ideas and conclusions
+4. Be structured as bullet points
 """
 ```
 
-### Для видео без русских субтитров:
+### For videos without Russian subtitles:
 
-1. **Использование ChatGPT или Claude** (рекомендуется)
-   - Сохраните транскрипт в файл
-   - Попросите AI перевести и сделать резюме на русском
-   - Пример промпта: "Переведи этот транскрипт на русский и сделай краткое резюме основных моментов"
+1. **Using ChatGPT or Claude** (recommended)
+   - Save the transcript to a file
+   - Ask the AI to translate and summarize in Russian
+   - Example prompt: "Translate this transcript to Russian and write a brief summary of the main points"
 
-2. **Использование DeepL или Google Translate**
-   - Скопируйте транскрипт и вставьте в переводчик
+2. **Using DeepL or Google Translate**
+   - Copy the transcript and paste it into the translator
 
-## ⚠️ Ограничения
+## Limitations
 
-- Скрипт работает только если для видео доступны субтитры (ручные или автоматические)
-- Если субтитры отключены владельцем видео, получить транскрипт невозможно
-- Резюме будет на том же языке, что и оригинальный транскрипт (для перевода используйте AI-сервисы)
+- The script only works if subtitles are available for the video (manual or automatic)
+- If subtitles are disabled by the video owner, the transcript cannot be retrieved
+- The summary will be in the same language as the original transcript (use AI services for translation)
 
-## 🛠️ Технологии
+## Technologies
 
 - Python 3.8+
-- [youtube-transcript-api](https://github.com/jdepoix/youtube-transcript-api) - для получения транскриптов
-- [requests](https://github.com/psf/requests) - для HTTP запросов
+- [youtube-transcript-api](https://github.com/jdepoix/youtube-transcript-api) — for fetching transcripts
+- [requests](https://github.com/psf/requests) — for HTTP requests
 
-## 📦 Зависимости
+## Dependencies
 
-Все зависимости указаны в `requirements.txt`:
+All dependencies are listed in `requirements.txt`:
 
 ```txt
 youtube-transcript-api>=1.2.2
 requests>=2.28.0
 ```
 
-## 🤝 Вклад в проект
+## Contributing
 
-Буду рад вашим предложениям и улучшениям! Если вы хотите внести свой вклад:
+Suggestions and improvements are welcome! If you'd like to contribute:
 
-1. Форкните репозиторий
-2. Создайте ветку для новой функции (`git checkout -b feature/amazing-feature`)
-3. Закоммитьте изменения (`git commit -m 'Add amazing feature'`)
-4. Запушьте в ветку (`git push origin feature/amazing-feature`)
-5. Откройте Pull Request
+1. Fork the repository
+2. Create a branch for your feature (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📄 Лицензия
+## License
 
-Этот проект распространяется под лицензией MIT. Подробности в файле [LICENSE](LICENSE).
+This project is distributed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## 👤 Автор
+## Author
 
 **Sergey Stepanenko**
 
 - GitHub: [@SergeyStepanenko](https://github.com/SergeyStepanenko)
 
-## 🙏 Благодарности
+## Acknowledgements
 
-- [youtube-transcript-api](https://github.com/jdepoix/youtube-transcript-api) за отличную библиотеку для работы с YouTube транскриптами
+- [youtube-transcript-api](https://github.com/jdepoix/youtube-transcript-api) for the excellent library for working with YouTube transcripts

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Скрипт для получения текста (транскрипта/субтитров) из YouTube видео.
-Поддерживает получение текста на разных языках и их резюмирование.
+Script for extracting text (transcripts/subtitles) from YouTube videos.
+Supports retrieving text in multiple languages and summarizing it.
 """
 
 import sys
@@ -15,7 +15,7 @@ from urllib.parse import urlparse, parse_qs
 
 
 def get_video_id(url):
-    """Извлекает ID видео из URL YouTube."""
+    """Extracts the video ID from a YouTube URL."""
     parsed_url = urlparse(url)
 
     if parsed_url.hostname in ['www.youtube.com', 'youtube.com']:
@@ -33,20 +33,20 @@ def get_video_id(url):
 
 def get_video_duration(video_id):
     """
-    Получает продолжительность видео в секундах.
+    Returns the video duration in seconds.
 
     Args:
-        video_id: ID видео YouTube
+        video_id: YouTube video ID
 
     Returns:
-        Продолжительность в секундах или None в случае ошибки
+        Duration in seconds, or None on error
     """
     try:
         url = f"https://www.youtube.com/watch?v={video_id}"
         response = requests.get(url, timeout=10)
 
-        # Ищем продолжительность в метаданных страницы
-        # YouTube хранит продолжительность в секундах в JSON данных
+        # Look for duration in page metadata
+        # YouTube stores the duration in seconds in JSON data
         duration_match = re.search(r'"lengthSeconds":"(\d+)"', response.text)
 
         if duration_match:
@@ -59,13 +59,13 @@ def get_video_duration(video_id):
 
 def format_time(seconds):
     """
-    Форматирует время из секунд в читаемый формат (ЧЧ:ММ:СС или ММ:СС).
+    Formats a duration from seconds into a human-readable string (HH:MM:SS or MM:SS).
 
     Args:
-        seconds: Количество секунд
+        seconds: Number of seconds
 
     Returns:
-        Отформатированная строка времени
+        Formatted time string
     """
     if seconds is None:
         return "N/A"
@@ -82,23 +82,23 @@ def format_time(seconds):
 
 def calculate_reading_time(text):
     """
-    Рассчитывает примерное время чтения текста.
+    Estimates the reading time for a given text.
 
-    Исходит из средней скорости чтения ~200 слов в минуту.
+    Based on an average reading speed of ~200 words per minute.
 
     Args:
-        text: Текст для подсчета
+        text: Text to measure
 
     Returns:
-        Время чтения в секундах
+        Reading time in seconds
     """
-    # Считаем количество слов (разделенных пробелами)
+    # Count the number of words (space-delimited)
     words = len(text.split())
 
-    # Средняя скорость чтения: 200 слов в минуту
+    # Average reading speed: 200 words per minute
     reading_speed_wpm = 200
 
-    # Рассчитываем время в секундах
+    # Calculate time in seconds
     reading_time_seconds = (words / reading_speed_wpm) * 60
 
     return int(reading_time_seconds)
@@ -106,24 +106,24 @@ def calculate_reading_time(text):
 
 def summarize_text(text, ratio=0.3):
     """
-    Создает резюме текста, используя экстрактивный метод.
-    Выбирает наиболее важные предложения на основе частоты слов.
+    Creates a summary of the text using an extractive method.
+    Selects the most important sentences based on word frequency.
 
     Args:
-        text: Исходный текст для резюмирования
-        ratio: Доля текста, которую нужно оставить (0.3 = 30%)
+        text: Source text to summarize
+        ratio: Fraction of text to keep (0.3 = 30%)
 
     Returns:
-        Резюмированный текст
+        Summarized text
     """
-    # Разбиваем на предложения
+    # Split into sentences
     sentences = re.split(r'[.!?]+', text)
     sentences = [s.strip() for s in sentences if len(s.strip()) > 10]
 
     if len(sentences) <= 5:
-        return text  # Текст слишком короткий для резюмирования
+        return text  # Text is too short to summarize
 
-    # Подсчитываем частоту слов (исключая стоп-слова)
+    # Count word frequency (excluding stop words)
     stop_words = {
         'в', 'и', 'на', 'с', 'по', 'для', 'не', 'что', 'это', 'как', 'его', 
         'к', 'но', 'они', 'мы', 'вы', 'он', 'она', 'а', 'то', 'все', 'я',
@@ -134,21 +134,21 @@ def summarize_text(text, ratio=0.3):
     for sentence in sentences:
         words.extend([w.lower() for w in re.findall(r'\b\w+\b', sentence)])
     
-    # Фильтруем стоп-слова и считаем частоту
+    # Filter stop words and compute frequency
     word_freq = Counter([w for w in words if w not in stop_words and len(w) > 2])
-    
-    # Вычисляем важность каждого предложения
+
+    # Compute the importance score for each sentence
     sentence_scores = []
     for sentence in sentences:
         words_in_sentence = [w.lower() for w in re.findall(r'\b\w+\b', sentence)]
         score = sum([word_freq.get(w, 0) for w in words_in_sentence if w not in stop_words])
         sentence_scores.append((sentence, score))
     
-    # Сортируем по важности и берем топ предложений
+    # Sort by importance and take the top sentences
     num_sentences = max(5, int(len(sentences) * ratio))
     top_sentences = sorted(sentence_scores, key=lambda x: x[1], reverse=True)[:num_sentences]
-    
-    # Восстанавливаем порядок предложений как в оригинале
+
+    # Restore the original sentence order
     summary_sentences = []
     for sentence in sentences:
         if any(sentence == s[0] for s in top_sentences):
@@ -159,16 +159,16 @@ def summarize_text(text, ratio=0.3):
 
 def format_statistics(video_duration, reading_time, original_words=None, summary_words=None):
     """
-    Форматирует статистику о видео и времени чтения.
+    Formats statistics about the video and reading time.
 
     Args:
-        video_duration: Продолжительность видео в секундах
-        reading_time: Время чтения в секундах
-        original_words: Количество слов в оригинальном тексте (опционально)
-        summary_words: Количество слов в резюме (опционально)
+        video_duration: Video duration in seconds
+        reading_time: Reading time in seconds
+        original_words: Word count of the original text (optional)
+        summary_words: Word count of the summary (optional)
 
     Returns:
-        Отформатированная строка со статистикой
+        Formatted statistics string
     """
     if video_duration is None:
         return ""
@@ -196,18 +196,18 @@ def format_statistics(video_duration, reading_time, original_words=None, summary
 
 def get_transcript(video_url, list_languages=False, show_stats=True, summarize=False, summary_ratio=0.3):
     """
-    Получает транскрипт видео с YouTube.
-    Приоритет отдается русскому языку, если его нет - берется любой доступный.
+    Retrieves the transcript of a YouTube video.
+    Russian language is prioritized; if unavailable, the first available language is used.
 
     Args:
-        video_url: URL видео на YouTube
-        list_languages: Если True, только показывает доступные языки
-        show_stats: Если True, показывает статистику времени
-        summarize: Если True, создает резюме транскрипта
-        summary_ratio: Доля текста для резюме (по умолчанию 0.3 = 30%)
+        video_url: YouTube video URL
+        list_languages: If True, only lists available languages
+        show_stats: If True, shows time statistics
+        summarize: If True, creates a summary of the transcript
+        summary_ratio: Fraction of text to keep in the summary (default 0.3 = 30%)
 
     Returns:
-        Текст транскрипта (или резюме) или информацию о доступных языках
+        Transcript text (or summary), or information about available languages
     """
     video_id = get_video_id(video_url)
 
@@ -215,7 +215,7 @@ def get_transcript(video_url, list_languages=False, show_stats=True, summarize=F
         return "Ошибка: Не удалось извлечь ID видео из URL"
 
     try:
-        # Создаем API объект и получаем список доступных транскриптов
+        # Create API object and fetch the list of available transcripts
         ytt_api = YouTubeTranscriptApi()
         transcript_list = ytt_api.list(video_id)
 
@@ -233,20 +233,20 @@ def get_transcript(video_url, list_languages=False, show_stats=True, summarize=F
 
             return result
 
-        # Пытаемся получить транскрипт на русском, если нет - берем первый доступный
+        # Try to get the Russian transcript; fall back to the first available
         try:
             transcript = transcript_list.find_transcript(['ru'])
         except NoTranscriptFound:
-            # Берем первый доступный транскрипт
+            # Take the first available transcript
             transcript = next(iter(transcript_list))
 
-        # Получаем данные транскрипта
+        # Fetch transcript data
         transcript_data = transcript.fetch()
 
-        # Формируем текст (в новой версии API entries - это объекты, не словари)
+        # Build the text (in the newer API version entries are objects, not dicts)
         original_text = '\n'.join([entry.text for entry in transcript_data])
         
-        # Применяем резюмирование, если требуется
+        # Apply summarization if requested
         if summarize:
             text = summarize_text(original_text, ratio=summary_ratio)
             result = f"Резюме транскрипта (язык: {transcript.language}):\n\n{text}"
@@ -254,19 +254,19 @@ def get_transcript(video_url, list_languages=False, show_stats=True, summarize=F
             text = original_text
             result = f"Транскрипт (язык: {transcript.language}):\n\n{text}"
 
-        # Добавляем статистику, если требуется
+        # Append statistics if requested
         if show_stats:
             video_duration = get_video_duration(video_id)
             if video_duration:
                 reading_time = calculate_reading_time(text)
                 
                 if summarize:
-                    # Показываем статистику для резюме
+                    # Show statistics for the summary
                     original_words = len(original_text.split())
                     summary_words = len(text.split())
                     stats = format_statistics(video_duration, reading_time, original_words, summary_words)
                 else:
-                    # Показываем обычную статистику
+                    # Show standard statistics
                     stats = format_statistics(video_duration, reading_time)
                 
                 result += f"\n{stats}"
@@ -283,48 +283,48 @@ def get_transcript(video_url, list_languages=False, show_stats=True, summarize=F
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Получение текста (транскрипта) из YouTube видео. Приоритет русскому языку.',
-        epilog='Пример: python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -s'
+        description='Extract text (transcript) from a YouTube video. Russian language is prioritized.',
+        epilog='Example: python youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" -s'
     )
 
-    parser.add_argument('url', help='URL YouTube видео')
+    parser.add_argument('url', help='YouTube video URL')
     parser.add_argument(
         '--list',
         action='store_true',
-        help='Показать все доступные языки для видео'
+        help='Show all available subtitle languages for the video'
     )
     parser.add_argument(
         '-o', '--output',
-        help='Файл для сохранения транскрипта (по умолчанию: transcript.txt)'
+        help='File to save the transcript to (default: transcript.txt)'
     )
     parser.add_argument(
         '--stdout',
         action='store_true',
-        help='Вывести результат в консоль вместо сохранения в файл'
+        help='Print result to console instead of saving to a file'
     )
     parser.add_argument(
         '-s', '--summarize',
         action='store_true',
-        help='Создать резюме транскрипта вместо полного текста'
+        help='Create a summary of the transcript instead of the full text'
     )
     parser.add_argument(
         '-r', '--ratio',
         type=float,
         default=0.3,
-        help='Коэффициент сжатия для резюме (0.1-0.9, по умолчанию: 0.3)'
+        help='Compression ratio for the summary (0.1-0.9, default: 0.3)'
     )
 
     args = parser.parse_args()
 
-    # Получаем транскрипт (с резюмированием или без)
+    # Fetch the transcript (with or without summarization)
     result = get_transcript(args.url, args.list, summarize=args.summarize, summary_ratio=args.ratio)
 
-    # Выводим результат
+    # Output the result
     if args.stdout:
-        # Вывод в консоль
+        # Print to console
         print(result)
     else:
-        # Сохранение в файл
+        # Save to file
         if args.summarize:
             default_file = 'summary.txt'
         else:
